@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #dfdc00;
+  --color-brand-hover: #ccc900;
+  --color-brand-soft: #f7f6c2;
+  --color-ink: #1e1e1e;
+  --color-ink-soft: #2c2c2c;
+  --font-heading: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Overpass", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-zinc-50 text-ink font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-bold tracking-tight;
+  }
+  h1 {
+    @apply text-2xl font-extrabold;
+  }
+  h2 {
+    @apply text-lg;
+  }
+  /* Duidelijke focus voor toetsenbordgebruikers: donkere rand met gele gloed. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--color-brand);
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--color-brand);
+    box-shadow: none;
+  }
+}

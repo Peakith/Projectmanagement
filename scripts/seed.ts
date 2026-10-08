@@ -33,9 +33,9 @@ const T = todayISO();
 const d = (n: number) => addDays(T, n);
 const thisMonday = weekStart(T);
 
-function must<T>(res: { data: T; error: { message: string } | null }, what: string): T {
+function must<T>(res: { data: T; error: { message: string } | null }, what: string): NonNullable<T> {
   if (res.error) throw new Error(`${what}: ${res.error.message}`);
-  return res.data;
+  return res.data as NonNullable<T>;
 }
 
 async function ensureUser(admin: SupabaseClient, u: { email: string; name: string; role: string }) {
