@@ -1,0 +1,61 @@
+{
+  "name": "studio-brutaal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration --no-file-parallelism",
+    "test:e2e": "playwright test",
+    "db:seed": "tsx scripts/seed.ts",
+    "owner:create": "tsx scripts/create-owner.ts",
+    "jobs:run": "tsx scripts/run-jobs.ts",
+    "quotes:simulate": "tsx scripts/simulate-quote.ts",
+    "stack:start": "bash scripts/local-stack/start.sh",
+    "stack:stop": "bash scripts/local-stack/stop.sh",
+    "stack:reset": "bash scripts/local-stack/reset.sh"
+  },
+  "dependencies": {
+    "@date-fns/tz": "^1.5.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@fontsource/overpass": "^5.3.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.53.0",
+    "next": "^16.4.0",
+    "radix-ui": "^1.7.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "server-only": "^0.0.1",
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "dotenv": "^18.0.6",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.0",
+    "pg": "^8.23.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.3"
+  }
+}
