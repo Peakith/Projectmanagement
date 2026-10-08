@@ -113,6 +113,10 @@ npm run owner:create -- --email lars@studiobrutaal.nl --name "Lars"
 - Weigert als er al een actieve eigenaar is (een bewuste tweede eigenaar: `--additional`).
 - Print een eenmalige link (24 uur geldig) waarmee Lars zelf een wachtwoord kiest. Er wordt geen vast wachtwoord gezet.
 
+### Database installeren via het Supabase-dashboard (zonder terminal)
+
+Op een nieuw online Supabase-project: **SQL Editor → New query**, plak het volledige bestand `supabase/install-alles.sql` en klik **Run**. Dit bevat alle migraties in één transactie (bij een fout wordt niets half aangemaakt) en registreert ze, zodat `supabase db push` ze later niet opnieuw uitvoert. Zet daarna onder **Settings → API → Exposed schemas** ook `finance` aan. Na nieuwe migraties: `bash scripts/build-install-sql.sh` om het bestand opnieuw te genereren.
+
 ### Eigenaar via het Supabase-dashboard (zonder terminal)
 
 1. Supabase → **Authentication → Users → Add user → Create new user**: e-mail + wachtwoord, vink **Auto Confirm User** aan.

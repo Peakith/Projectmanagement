@@ -15,7 +15,7 @@ Er is **niets gepubliceerd** en er zijn geen betaalde diensten afgesloten. Dit i
 
 1. Supabase-project aanmaken (EU-regio). Onder *Authentication*: **signup uitzetten**, Site URL = productie-URL, redirect-URL `https://<app>/auth/callback`.
 2. Onder *Settings → API → Exposed schemas* **`finance` toevoegen** (anders werken de financiële pagina's niet; het faalt dicht).
-3. `npx supabase link --project-ref <ref>` en `npx supabase db push` (past `supabase/migrations` toe, inclusief template v1). **Draai de seed niet in productie** (het script weigert dat ook).
+3. `npx supabase link --project-ref <ref>` en `npx supabase db push` (past `supabase/migrations` toe, inclusief template v1). Zonder terminal: plak `supabase/install-alles.sql` in de SQL Editor en klik Run. **Draai de seed niet in productie** (het script weigert dat ook).
 4. Omgevingsvariabelen bij de host: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` (geheim, alleen server), `APP_URL`, `CRON_SECRET` (≥ 32 willekeurige tekens), `QUOTE_WEBHOOK_ENABLED=false`.
 5. Deploy de app; daarna lokaal met de productie-omgevingsvariabelen: `npm run owner:create -- --email lars@studiobrutaal.nl --name "Lars"` en open de getoonde link.
 6. Scheduler aansluiten (zie docs/AUTOMATISERING.md) en in *Instellingen → Automatisering* controleren dat jobs draaien.
