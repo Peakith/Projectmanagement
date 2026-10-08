@@ -113,6 +113,22 @@ npm run owner:create -- --email lars@studiobrutaal.nl --name "Lars"
 - Weigert als er al een actieve eigenaar is (een bewuste tweede eigenaar: `--additional`).
 - Print een eenmalige link (24 uur geldig) waarmee Lars zelf een wachtwoord kiest. Er wordt geen vast wachtwoord gezet.
 
+### Eigenaar via het Supabase-dashboard (zonder terminal)
+
+1. Supabase → **Authentication → Users → Add user → Create new user**: e-mail + wachtwoord, vink **Auto Confirm User** aan.
+2. Supabase → **SQL Editor**: plak `supabase/snippets/eigenaar-instellen.sql`, pas het e-mailadres aan en voer uit.
+3. Log in op de app.
+
+### Inloggen lukt niet op Vercel/online?
+
+Open **`https://<jouw-app>/status`**. Die pagina controleert (zonder sleutels te tonen): Supabase-URL en sleutels, `APP_URL`, bereikbaarheid van Supabase Auth, open registratie, of de migraties zijn toegepast, of schema `finance` is geëxposeerd en of er een eigenaar is, met per punt de oplossing. Veelvoorkomende oorzaken:
+
+- De **testaccounts** (`lars@studiobrutaal.test` enz.) bestaan alleen in de lokale ontwikkeldatabase; online moet je de eigenaar zelf aanmaken (hierboven).
+- **Migraties niet uitgevoerd** op het online Supabase-project (`npx supabase link --project-ref <ref>` + `npx supabase db push`).
+- **Omgevingsvariabelen** ontbreken of zijn gewijzigd zonder nieuwe deploy. Zowel `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`/`SUPABASE_SECRET_KEY` als de namen van de Vercel–Supabase-koppeling (`NEXT_PUBLIC_SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`) worden herkend.
+- Vercel deployt de branch **`main`**; zolang de pull request niet is gemerged staat daar nog geen app. Gebruik de preview-URL van de branch of merge eerst.
+- Ingelogd maar "Geen toegang": het account heeft nog geen rol (eigenaar instellen, of uitnodigen via Instellingen → Gebruikers).
+
 ## 6. Gebruikers uitnodigen en rollen testen
 
 Als eigenaar: **Instellingen → Gebruikers en rollen → Account aanmaken**.

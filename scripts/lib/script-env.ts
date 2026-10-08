@@ -16,13 +16,13 @@ export function need(name: string): string {
 export const SUPABASE_URL = () => need("NEXT_PUBLIC_SUPABASE_URL");
 
 export function adminClient(): SupabaseClient {
-  return createClient(SUPABASE_URL(), need("SUPABASE_SECRET_KEY"), {
+  return createClient(SUPABASE_URL(), process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || need("SUPABASE_SECRET_KEY"), {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
 export async function userClient(email: string, password: string): Promise<SupabaseClient> {
-  const c = createClient(SUPABASE_URL(), need("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"), {
+  const c = createClient(SUPABASE_URL(), process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || need("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"), {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { error } = await c.auth.signInWithPassword({ email, password });

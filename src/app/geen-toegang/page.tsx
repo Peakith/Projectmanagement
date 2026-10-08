@@ -14,7 +14,7 @@ export default async function NoAccess() {
         <p className="mt-2 text-sm text-zinc-600">
           {session?.role
             ? "Je account heeft geen toegang tot deze pagina."
-            : "Je account heeft (nog) geen toegang tot het systeem. Vraag de eigenaar om je toegang te geven."}
+            : "Je bent ingelogd, maar je account heeft (nog) geen rol in het systeem. Vraag de eigenaar om je toegang te geven. Ben jij de eigenaar en is dit een nieuwe installatie? Stel dan eerst de eigenaarsrol in (README → 'Eigenaar registreren')."}
         </p>
         <div className="mt-4 flex justify-center gap-3">
           {session?.role && (

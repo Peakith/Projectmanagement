@@ -7,7 +7,7 @@
  * - Weigert als er al een actieve eigenaar is (tenzij --additional, voor een bewuste tweede eigenaar).
  * - Maakt het account aan zonder wachtwoord en toont een eenmalige link om het wachtwoord te kiezen.
  */
-import { adminClient, findUserByEmail, need } from "./lib/script-env";
+import { adminClient, findUserByEmail } from "./lib/script-env";
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -21,7 +21,6 @@ if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
   process.exit(1);
 }
 const appUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
-need("SUPABASE_SECRET_KEY");
 const admin = adminClient();
 
 const { data: owners, error: ownerErr } = await admin.from("user_roles").select("user_id").eq("role", "owner").eq("active", true);

@@ -16,7 +16,13 @@ export async function signIn(_prev: ActionResult | null, fd: FormData): Promise<
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { ok: false, error: "Inloggen mislukt. Controleer je e-mailadres en wachtwoord." };
+  if (error) {
+    if (error.code === "email_not_confirmed")
+      return { ok: false, error: "Dit account is nog niet bevestigd. Open de uitnodigingslink, of bevestig de gebruiker in Supabase (Authentication → Users)." };
+    if (error.code === "invalid_credentials" || error.status === 400)
+      return { ok: false, error: "E-mailadres of wachtwoord klopt niet, of dit account bestaat (nog) niet in deze omgeving. Testaccounts uit de ontwikkelseed bestaan alleen lokaal." };
+    return { ok: false, error: "Kan de inlogdienst niet bereiken. Controleer de Supabase-instellingen via /status." };
+  }
   redirect(safeNext(fd.get("next")));
 }
 

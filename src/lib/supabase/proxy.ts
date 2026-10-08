@@ -1,12 +1,20 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { supabasePublicKey, supabaseUrl } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/", "/api/integrations/"];
+const PUBLIC_PATHS = ["/login", "/auth/", "/status", "/api/cron/", "/api/integrations/"];
 
 /** Ververst de sessie per verzoek en stuurt niet-ingelogde bezoekers naar /login. */
 export async function updateSession(request: NextRequest) {
+  const url = supabaseUrl();
+  const key = supabasePublicKey();
+  if (!url || !key) {
+    // Configuratie ontbreekt: stuur naar de diagnosepagina in plaats van een kale serverfout.
+    if (request.nextUrl.pathname === "/status") return NextResponse.next({ request });
+    return NextResponse.redirect(new URL("/status", request.url));
+  }
   let response = NextResponse.next({ request });
-  const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
+  const supabase = createServerClient(url, key, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
