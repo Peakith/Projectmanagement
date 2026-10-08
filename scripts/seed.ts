@@ -300,7 +300,11 @@ async function main() {
   must(await lars.from("projects").update({ phase: "verloren", health_note: "Budget niet rond" }).eq("id", p12), "verloren");
 
   // Realistischer beeld: oude, niet bewust ingestelde taken zijn al gedaan. Eén taak blijft bewust achterstallig.
-  must(await lars.from("tasks").update({ status: "klaar" }).eq("status", "todo").lt("due_date", T).neq("id", late), "opschonen");
+  const { data: nextIds } = await lars.from("projects").select("next_action_task_id").not("next_action_task_id", "is", null);
+  const keep = [late, ...(nextIds ?? []).map((r) => r.next_action_task_id as string)];
+  must(await lars.from("tasks").update({ status: "klaar" }).eq("status", "todo").lt("due_date", T).not("id", "in", `(${keep.join(",")})`), "opschonen");
+  // Demonstratie: de gekozen volgende actie van de open dag-campagne is net afgerond => melding 'kies een nieuwe actie'.
+  must(await lars.from("tasks").update({ status: "klaar" }).eq("project_id", p9).ilike("title", "Interne debrief%"), "debrief");
 
   // Financiën (alleen eigenaar). Bedragen in centen, exclusief btw.
   const fin = lars.schema("finance");

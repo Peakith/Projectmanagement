@@ -13,10 +13,10 @@ const rp = (id: string) => {
 
 const dayBase = {
   shoot_date: zDate,
-  start_time: zTime.nullable(),
-  end_time: zTime.nullable(),
-  location: z.string().max(200).nullable().transform((v) => v ?? ""),
-  address: z.string().max(300).nullable().transform((v) => v ?? ""),
+  start_time: zTime.nullish(),
+  end_time: zTime.nullish(),
+  location: z.string().max(200).nullish().transform((v) => v ?? ""),
+  address: z.string().max(300).nullish().transform((v) => v ?? ""),
 };
 
 export async function addShootDay(projectId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
@@ -39,10 +39,10 @@ export async function addShootDay(projectId: string, _p: ActionResult | null, fd
 
 const daySchema = z.object({
   ...dayBase,
-  schedule: z.string().max(5000).nullable().transform((v) => v ?? ""),
-  callsheet_url: zUrl.nullable(),
-  crew_notes: z.string().max(3000).nullable().transform((v) => v ?? ""),
-  internal_notes: z.string().max(3000).nullable().transform((v) => v ?? ""),
+  schedule: z.string().max(5000).nullish().transform((v) => v ?? ""),
+  callsheet_url: zUrl.nullish(),
+  crew_notes: z.string().max(3000).nullish().transform((v) => v ?? ""),
+  internal_notes: z.string().max(3000).nullish().transform((v) => v ?? ""),
 });
 
 export async function updateShootDay(projectId: string, dayId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
@@ -70,10 +70,10 @@ export async function deleteShootDay(projectId: string, dayId: string): Promise<
 
 const bookingSchema = z.object({
   freelancer_id: zUuid,
-  role: z.string().trim().max(100).nullable().transform((v) => v ?? ""),
+  role: z.string().trim().max(100).nullish().transform((v) => v ?? ""),
   status: z.enum(BOOKING_STATUSES),
-  work_description: z.string().max(2000).nullable().transform((v) => v ?? ""),
-  internal_notes: z.string().max(2000).nullable().transform((v) => v ?? ""),
+  work_description: z.string().max(2000).nullish().transform((v) => v ?? ""),
+  internal_notes: z.string().max(2000).nullish().transform((v) => v ?? ""),
   shoot_day_ids: z.array(zUuid),
 });
 

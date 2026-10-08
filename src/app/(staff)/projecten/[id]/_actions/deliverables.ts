@@ -14,12 +14,12 @@ const rp = (id: string) => {
 
 const deliverableSchema = z.object({
   name: z.string().trim().min(1, "Naam is verplicht").max(200),
-  goal: z.string().max(2000).nullable().transform((v) => v ?? ""),
-  scope: z.string().max(4000).nullable().transform((v) => v ?? ""),
-  planned_delivery_date: zDate.nullable(),
-  delivered_on: zDate.nullable().optional(),
+  goal: z.string().max(2000).nullish().transform((v) => v ?? ""),
+  scope: z.string().max(4000).nullish().transform((v) => v ?? ""),
+  planned_delivery_date: zDate.nullish(),
+  delivered_on: zDate.nullish().optional(),
   formats: z.array(z.string().trim().min(1).max(20)).max(20),
-  formats_extra: z.string().max(200).nullable(),
+  formats_extra: z.string().max(200).nullish(),
   included_rounds: z.coerce.number().int().min(0).max(10),
 });
 
@@ -67,7 +67,7 @@ export async function addVersion(projectId: string, deliverableId: string, _p: A
   const s = await requireStaff();
   if (!(await guard(s, projectId, deliverableId))) return { ok: false, error: "Niet gevonden" };
   const v = z
-    .object({ version_number: z.coerce.number().int().min(1).max(999), delivered_on: zDate, review_url: zUrl.nullable(), notes: z.string().max(2000).nullable().transform((x) => x ?? "") })
+    .object({ version_number: z.coerce.number().int().min(1).max(999), delivered_on: zDate, review_url: zUrl.nullish(), notes: z.string().max(2000).nullish().transform((x) => x ?? "") })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const { error } = await s.supabase.from("deliverable_versions").insert({ ...v.data, deliverable_id: deliverableId, created_by: s.userId });
@@ -77,12 +77,12 @@ export async function addVersion(projectId: string, deliverableId: string, _p: A
 }
 
 const roundSchema = z.object({
-  version_id: zUuid.nullable(),
-  requested_on: zDate.nullable(),
-  feedback_due: zDate.nullable(),
-  extra_reason: z.string().trim().max(1000).nullable(),
+  version_id: zUuid.nullish(),
+  requested_on: zDate.nullish(),
+  feedback_due: zDate.nullish(),
+  extra_reason: z.string().trim().max(1000).nullish(),
   extra_approved: zBool,
-  extra_amount: z.string().max(30).nullable(),
+  extra_amount: z.string().max(30).nullish(),
 });
 
 /** Opent de volgende feedbackronde. Buiten de inbegrepen rondes alleen door de eigenaar, met reden en goedkeuring. */
@@ -133,12 +133,12 @@ export async function updateRound(projectId: string, roundId: string, _p: Action
   const v = z
     .object({
       status: z.enum(FEEDBACK_STATUSES),
-      version_id: zUuid.nullable(),
-      requested_on: zDate.nullable(),
-      feedback_due: zDate.nullable(),
-      received_on: zDate.nullable(),
-      processed_on: zDate.nullable(),
-      notes: z.string().max(2000).nullable().transform((x) => x ?? ""),
+      version_id: zUuid.nullish(),
+      requested_on: zDate.nullish(),
+      feedback_due: zDate.nullish(),
+      received_on: zDate.nullish(),
+      processed_on: zDate.nullish(),
+      notes: z.string().max(2000).nullish().transform((x) => x ?? ""),
     })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
@@ -156,7 +156,7 @@ export async function updateRound(projectId: string, roundId: string, _p: Action
 export async function approve(projectId: string, deliverableId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const s = await requireStaff();
   const v = z
-    .object({ approved_version_id: zUuid, approved_on: zDate, approval_source: z.enum(APPROVAL_SOURCES), approval_reference: z.string().trim().max(500).nullable().transform((x) => x ?? "") })
+    .object({ approved_version_id: zUuid, approved_on: zDate, approval_source: z.enum(APPROVAL_SOURCES), approval_reference: z.string().trim().max(500).nullish().transform((x) => x ?? "") })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const { error } = await s.supabase.from("deliverables").update({ ...v.data, approved_by: s.userId }).eq("id", deliverableId).eq("project_id", projectId);
@@ -180,7 +180,7 @@ export async function revokeApproval(projectId: string, deliverableId: string): 
 export async function addLink(projectId: string, deliverableId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const s = await requireStaff();
   if (!(await guard(s, projectId, deliverableId))) return { ok: false, error: "Niet gevonden" };
-  const v = z.object({ label: z.string().trim().min(1, "Omschrijving is verplicht").max(200), url: zUrl, format: z.string().max(20).nullable().transform((x) => x ?? "") }).safeParse(formObject(fd));
+  const v = z.object({ label: z.string().trim().min(1, "Omschrijving is verplicht").max(200), url: zUrl, format: z.string().max(20).nullish().transform((x) => x ?? "") }).safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const { error } = await s.supabase.from("deliverable_links").insert({ ...v.data, deliverable_id: deliverableId, is_final: true });
   if (error) return dbError(error);

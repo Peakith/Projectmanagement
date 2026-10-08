@@ -36,7 +36,19 @@ export function ActionForm({
   resetOnSuccess?: boolean;
   confirm?: string;
 } & Omit<React.ComponentProps<"form">, "action" | "onSubmit">) {
-  const [state, formAction] = React.useActionState(action, null);
+  // Melding direct na terugkeer van de actie, zodat die ook verschijnt als het formulier
+  // na opslaan verdwijnt (bijv. een afgehandeld voorstel).
+  const wrapped = React.useCallback(
+    async (prev: ActionResult | null, fd: FormData) => {
+      const r = await action(prev, fd);
+      if (r.ok) {
+        if (success !== false) toast.success(r.message ?? success);
+      } else toast.error(r.error);
+      return r;
+    },
+    [action, success],
+  );
+  const [state, formAction] = React.useActionState(wrapped, null);
   const ref = React.useRef<HTMLFormElement>(null);
   const handled = React.useRef<ActionResult | null>(null);
 
@@ -44,13 +56,10 @@ export function ActionForm({
     if (!state || handled.current === state) return;
     handled.current = state;
     if (state.ok) {
-      if (success !== false) toast.success(state.message ?? success);
       if (resetOnSuccess) ref.current?.reset();
       onSuccess?.(state);
-    } else {
-      toast.error(state.error);
     }
-  }, [state, success, resetOnSuccess, onSuccess]);
+  }, [state, resetOnSuccess, onSuccess]);
 
   return (
     <FormStateContext.Provider value={state}>

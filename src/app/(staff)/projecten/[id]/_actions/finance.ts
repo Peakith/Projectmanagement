@@ -18,7 +18,7 @@ const rp = (id: string) => {
 const euro = (label: string, optional = false) =>
   z
     .string()
-    .nullable()
+    .nullish()
     .transform((v, ctx) => {
       if (!v) {
         if (optional) return null;
@@ -43,11 +43,11 @@ export async function updateQuote(projectId: string, _p: ActionResult | null, fd
   const v = z
     .object({
       quote_amount: euro("Offertebedrag", true),
-      quote_reference: z.string().max(100).nullable().transform((x) => x ?? ""),
-      quote_sent_on: zDate.nullable(),
+      quote_reference: z.string().max(100).nullish().transform((x) => x ?? ""),
+      quote_sent_on: zDate.nullish(),
       vat_rate_percent: z.coerce.number().min(0).max(100),
-      payment_terms: z.string().max(500).nullable().transform((x) => x ?? ""),
-      notes: z.string().max(3000).nullable().transform((x) => x ?? ""),
+      payment_terms: z.string().max(500).nullish().transform((x) => x ?? ""),
+      notes: z.string().max(3000).nullish().transform((x) => x ?? ""),
     })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
@@ -61,7 +61,7 @@ export async function updateQuote(projectId: string, _p: ActionResult | null, fd
 export async function addExtraWork(projectId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const { f } = await fin();
   const v = z
-    .object({ description: z.string().trim().min(1, "Omschrijving is verplicht").max(500), amount: euro("Bedrag"), status: z.enum(["voorgesteld", "goedgekeurd", "afgewezen"]), approved_on: zDate.nullable() })
+    .object({ description: z.string().trim().min(1, "Omschrijving is verplicht").max(500), amount: euro("Bedrag"), status: z.enum(["voorgesteld", "goedgekeurd", "afgewezen"]), approved_on: zDate.nullish() })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const approved_on = v.data.status === "goedgekeurd" ? (v.data.approved_on ?? new Date().toISOString().slice(0, 10)) : v.data.approved_on;
@@ -90,10 +90,10 @@ export async function addCost(projectId: string, _p: ActionResult | null, fd: Fo
       kind: z.enum(["begroot", "werkelijk"]),
       category: z.enum(COST_CATEGORIES),
       description: z.string().trim().min(1, "Omschrijving is verplicht").max(500),
-      supplier: z.string().max(200).nullable().transform((x) => x ?? ""),
+      supplier: z.string().max(200).nullish().transform((x) => x ?? ""),
       amount: euro("Bedrag"),
-      incurred_on: zDate.nullable(),
-      booking_id: zUuid.nullable(),
+      incurred_on: zDate.nullish(),
+      booking_id: zUuid.nullish(),
     })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
@@ -116,7 +116,7 @@ export async function deleteFinanceRow(projectId: string, table: "costs" | "extr
 export async function setBookingAgreement(projectId: string, bookingId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const { f } = await fin();
   const v = z
-    .object({ rate: euro("Tarief", true), rate_unit: z.enum(["dag", "halve_dag", "uur", "project"]), agreed_total: euro("Afgesproken totaal", true), notes: z.string().max(1000).nullable().transform((x) => x ?? "") })
+    .object({ rate: euro("Tarief", true), rate_unit: z.enum(["dag", "halve_dag", "uur", "project"]), agreed_total: euro("Afgesproken totaal", true), notes: z.string().max(1000).nullish().transform((x) => x ?? "") })
     .safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const { error } = await f
@@ -132,7 +132,7 @@ export async function addInvoice(projectId: string, _p: ActionResult | null, fd:
   const v = z
     .object({
       invoice_number: z.string().trim().min(1, "Factuurnummer is verplicht").max(60),
-      description: z.string().max(500).nullable().transform((x) => x ?? ""),
+      description: z.string().max(500).nullish().transform((x) => x ?? ""),
       issued_on: zDate,
       due_on: zDate,
       amount_excl: euro("Bedrag excl. btw"),
@@ -169,7 +169,7 @@ export async function setInvoiceStatus(projectId: string, id: string, status: "c
 
 export async function addPayment(projectId: string, invoiceId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const { f } = await fin();
-  const v = z.object({ received_on: zDate, amount: euro("Bedrag"), reference: z.string().max(200).nullable().transform((x) => x ?? "") }).safeParse(formObject(fd));
+  const v = z.object({ received_on: zDate, amount: euro("Bedrag"), reference: z.string().max(200).nullish().transform((x) => x ?? "") }).safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   if (!v.data.amount || v.data.amount <= 0) return { ok: false, error: "Bedrag moet groter dan nul zijn" };
   const { error } = await f.from("payments").insert({ invoice_id: invoiceId, received_on: v.data.received_on, amount_cents: v.data.amount, reference: v.data.reference });
@@ -180,7 +180,7 @@ export async function addPayment(projectId: string, invoiceId: string, _p: Actio
 
 export async function addFollowup(projectId: string, _p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const { f } = await fin();
-  const v = z.object({ description: z.string().trim().min(1, "Omschrijving is verplicht").max(500), due_on: zDate.nullable() }).safeParse(formObject(fd));
+  const v = z.object({ description: z.string().trim().min(1, "Omschrijving is verplicht").max(500), due_on: zDate.nullish() }).safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const { error } = await f.from("followups").insert({ project_id: projectId, ...v.data });
   if (error) return dbError(error);

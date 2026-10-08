@@ -8,13 +8,13 @@ import { AVAILABILITY } from "@/lib/domain/labels";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Naam is verplicht").max(200),
-  specialisms: z.string().max(300).nullable().transform((v) => (v ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 15)),
-  email: z.email("Ongeldig e-mailadres").nullable(),
-  phone: z.string().max(40).nullable(),
-  city: z.string().max(100).nullable().transform((v) => v ?? ""),
-  notes: z.string().max(4000).nullable().transform((v) => v ?? ""),
+  specialisms: z.string().max(300).nullish().transform((v) => (v ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 15)),
+  email: z.email("Ongeldig e-mailadres").nullish(),
+  phone: z.string().max(40).nullish(),
+  city: z.string().max(100).nullish().transform((v) => v ?? ""),
+  notes: z.string().max(4000).nullish().transform((v) => v ?? ""),
   availability: z.enum(AVAILABILITY),
-  availability_note: z.string().max(300).nullable().transform((v) => v ?? ""),
+  availability_note: z.string().max(300).nullish().transform((v) => v ?? ""),
   active: zBool.optional(),
 });
 

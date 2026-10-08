@@ -38,8 +38,8 @@ const inviteSchema = z.object({
   email: z.email("Ongeldig e-mailadres"),
   full_name: z.string().trim().min(1, "Naam is verplicht").max(120),
   role: z.enum(["employee", "freelancer", "client"]),
-  freelancer_id: zUuid.nullable(),
-  project_id: zUuid.nullable(),
+  freelancer_id: zUuid.nullish(),
+  project_id: zUuid.nullish(),
 });
 
 /**

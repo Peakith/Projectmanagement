@@ -118,7 +118,7 @@ export default async function DeliverablesPage({ params }: { params: Promise<{ i
                 )}
                 <details className="mt-2">
                   <summary className="cursor-pointer text-sm font-semibold">Nieuwe versie vastleggen</summary>
-                  <ActionForm action={addVersion.bind(null, id, d.id)} resetOnSuccess className="mt-2 grid gap-3 sm:grid-cols-4">
+                  <ActionForm key={`v-${latest?.id}`} action={addVersion.bind(null, id, d.id)} resetOnSuccess className="mt-2 grid gap-3 sm:grid-cols-4">
                     <Field label="Versienummer" htmlFor={`v-n-${d.id}`}>
                       <Input id={`v-n-${d.id}`} name="version_number" type="number" min={1} defaultValue={(latest?.version_number ?? 0) + 1} required />
                     </Field>
@@ -210,7 +210,7 @@ export default async function DeliverablesPage({ params }: { params: Promise<{ i
                 {!info.blockedByOpenRound && !(info.requiresExtraApproval && !owner) && (
                   <details className="mt-2">
                     <summary className="cursor-pointer text-sm font-semibold">{info.requiresExtraApproval ? `Extra ronde ${info.nextRoundNumber} openen (meerwerk)` : `Ronde ${info.nextRoundNumber} openen`}</summary>
-                    <ActionForm action={openRound.bind(null, id, d.id)} className="mt-2 grid gap-3 sm:grid-cols-3">
+                    <ActionForm key={`or-${latest?.id}-${rs.length}`} action={openRound.bind(null, id, d.id)} className="mt-2 grid gap-3 sm:grid-cols-3">
                       <Field label="Versie ter review" htmlFor={`or-v-${d.id}`}>
                         <Select id={`or-v-${d.id}`} name="version_id" defaultValue={latest?.id ?? ""}>
                           <option value="">—</option>
@@ -267,7 +267,7 @@ export default async function DeliverablesPage({ params }: { params: Promise<{ i
                 ) : vs.length === 0 ? (
                   <p className="text-sm text-zinc-600">Leg eerst een versie vast.</p>
                 ) : (
-                  <ActionForm action={approve.bind(null, id, d.id)} success="Akkoord vastgelegd" className="grid gap-3 sm:grid-cols-4">
+                  <ActionForm key={`ap-${latest?.id}`} action={approve.bind(null, id, d.id)} success="Akkoord vastgelegd" className="grid gap-3 sm:grid-cols-4">
                     <Field label="Versie" htmlFor={`ap-v-${d.id}`}>
                       <Select id={`ap-v-${d.id}`} name="approved_version_id" defaultValue={latest?.id}>
                         {vs.map((v) => (

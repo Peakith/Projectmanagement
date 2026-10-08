@@ -34,13 +34,13 @@ export async function createDraftVersion(templateId: string): Promise<ActionResu
 
 export async function createVariant(_p: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const s = await requireOwner();
-  const v = z.object({ name: z.string().trim().min(1, "Naam is verplicht").max(100), from_version: zUuid.nullable(), description: z.string().max(500).nullable() }).safeParse(formObject(fd));
+  const v = z.object({ name: z.string().trim().min(1, "Naam is verplicht").max(100), from_version: zUuid.nullish(), description: z.string().max(500).nullish() }).safeParse(formObject(fd));
   if (!v.success) return zodError(v.error);
   const { data: t, error } = await s.supabase.from("templates").insert({ name: v.data.name, description: v.data.description ?? "" }).select("id").single();
   if (error) return dbError(error);
   const { data: nv, error: e2 } = await s.supabase.from("template_versions").insert({ template_id: t.id, version: 1, notes: "Eerste versie", created_by: s.userId }).select("id").single();
   if (e2) return dbError(e2);
-  const { error: e3 } = await copyTasks(s, v.data.from_version, nv.id);
+  const { error: e3 } = await copyTasks(s, v.data.from_version ?? null, nv.id);
   if (e3) return dbError(e3);
   revalidatePath("/instellingen/templates");
   redirect(`/instellingen/templates/${nv.id}`);
@@ -78,8 +78,8 @@ const taskSchema = z
     phase: z.enum(PHASES),
     sort: z.coerce.number().int().min(0).max(10000),
     title: z.string().trim().min(1, "Titel is verplicht").max(200),
-    description: z.string().max(3000).nullable().transform((x) => x ?? ""),
-    checklist: z.string().max(3000).nullable().transform((x) => (x ?? "").split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 30)),
+    description: z.string().max(3000).nullish().transform((x) => x ?? ""),
+    checklist: z.string().max(3000).nullish().transform((x) => (x ?? "").split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 30)),
     anchor: z.enum(["none", "project_start", "project_deadline", "shoot_day"]),
     offset_days: z.coerce.number().int().min(-365).max(365),
     priority: z.enum(PRIORITIES),
